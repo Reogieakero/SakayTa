@@ -1,14 +1,16 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $email = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';
+    // Get values from form
+    $email = trim($_POST['email'] ?? '');
+    $password = trim($_POST['password'] ?? '');
     $role = $_POST['role'] ?? '';
 
+    // Validate inputs
     if (empty($email) || empty($password) || empty($role)) {
         die("❌ Please fill in all fields.");
     }
 
-    // Hash password for security
+    // Hash password
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     // Database connection
@@ -18,13 +20,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("❌ Connection failed: " . $conn->connect_error);
     }
 
+    // Check if email already exists
+    $checkStmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    $checkStmt->bind_param("s", $email);
+    $checkStmt->execute();
+    $checkStmt->store_result();
+
+    if ($checkStmt->num_rows > 0) {
+        $checkStmt->close();
+        $conn->close();
+        die("⚠️ Email already registered. Please use another one.");
+    }
+    $checkStmt->close();
+
+    // Insert new user
     $stmt = $conn->prepare("INSERT INTO users (email, password, role) VALUES (?, ?, ?)");
     $stmt->bind_param("sss", $email, $hashedPassword, $role);
 
     if ($stmt->execute()) {
-        echo "✅ Registration Successful! <br>";
-        echo "Email: " . htmlspecialchars($email) . "<br>";
-        echo "Role: " . htmlspecialchars($role) . "<br>";
+        // ✅ Redirect to login page with success
+        header("Location: login.html?success=1");
+        exit();
     } else {
         echo "❌ Error: " . $stmt->error;
     }
