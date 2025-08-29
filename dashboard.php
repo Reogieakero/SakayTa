@@ -126,7 +126,7 @@ $userName = $_SESSION['user_name'];
                     
                     <div class="user-profile">
                         <div class="profile-avatar">
-                            <span>JD</span>
+                            <span><?php echo htmlspecialchars(substr($userName, 0, 1) . substr(strstr($userName, ' '), 1, 1)); ?></span>
                         </div>
                         <div class="profile-info">
                             <h3><?php echo htmlspecialchars($userName); ?></h3>
