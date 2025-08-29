@@ -9,6 +9,10 @@ if (!isset($_SESSION['user_email'])) {
 
 $userEmail = $_SESSION['user_email'];
 $userName = $_SESSION['user_name'];
+
+// Check the current ride status
+$rideStatus = $_SESSION['ride_status'] ?? 'none';
+$ridePrice = $_SESSION['ride_price'] ?? '0'; // Fix: Set a default value to prevent the warning.
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,8 +22,20 @@ $userName = $_SESSION['user_name'];
     <title>Passenger Dashboard - Sakay Ta</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="dashboard-styles.css">
+
 </head>
 <body>
+    <?php
+    if (isset($_SESSION['notification'])): ?>
+        <div class="notification-success" id="notification">
+            <p><?php echo htmlspecialchars($_SESSION['notification']); ?></p>
+            <button class="close-btn" onclick="document.getElementById('notification').style.display='none';">&times;</button>
+        </div>
+    <?php
+    unset($_SESSION['notification']);
+    endif;
+    ?>
+
     <header class="header">
         <div class="container">
             <div class="logo">
@@ -56,6 +72,7 @@ $userName = $_SESSION['user_name'];
         <div class="dashboard-background"></div>
         <div class="container">
             <div class="dashboard-grid">
+                <?php if ($rideStatus === 'none' || $rideStatus === 'declined' || $rideStatus === 'completed'): ?>
                 <section class="dashboard-card book-ride-card" data-animate="slideUp">
                     <div class="card-header">
                         <div class="card-icon">
@@ -66,7 +83,7 @@ $userName = $_SESSION['user_name'];
                         <h2>Book Your Ride</h2>
                     </div>
                     
-                    <form class="booking-form" id="bookingForm">
+                    <form class="booking-form" id="bookingForm" action="ride_book_process.php" method="POST">
                         <div class="form-group">
                             <label for="pickup">Pickup Location</label>
                             <div class="location-input">
@@ -112,6 +129,7 @@ $userName = $_SESSION['user_name'];
                         </button>
                     </form>
                 </section>
+                <?php endif; ?>
 
                 <section class="dashboard-card account-card" data-animate="slideUp" data-delay="200">
                     <div class="card-header">
@@ -168,61 +186,77 @@ $userName = $_SESSION['user_name'];
                     <button class="btn btn-primary btn-full">Settings</button>
                 </section>
 
-                <section class="dashboard-card current-ride-card" data-animate="slideUp" data-delay="400">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
-                                <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2" fill="none"/>
-                            </svg>
+                <?php if ($rideStatus === 'accepted'): ?>
+                    <section class="dashboard-card current-ride-card" data-animate="slideUp" data-delay="400">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2" fill="none"/>
+                                </svg>
+                            </div>
+                            <h2>Current Ride</h2>
                         </div>
-                        <h2>Current Ride</h2>
-                    </div>
-                    
-                    <div class="ride-status">
-                        <div class="status-badge driver-en-route">Driver En Route</div>
                         
-                        <div class="ride-details">
-                            <div class="detail-row">
-                                <span class="label">Driver</span>
-                                <div class="driver-info">
-                                    <span class="driver-name">Sitoy Santos</span>
-                                    <div class="rating">
-                                        <span>4.8</span>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700">
-                                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-                                        </svg>
+                        <div class="ride-status">
+                            <div class="status-badge driver-en-route">Driver En Route</div>
+                            <div class="ride-details">
+                                <div class="detail-row">
+                                    <span class="label">Driver</span>
+                                    <div class="driver-info">
+                                        <span class="driver-name"><?php echo htmlspecialchars($_SESSION['driver_name']); ?></span>
+                                        <div class="rating">
+                                            <span>4.8</span>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700">
+                                                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                                            </svg>
+                                        </div>
                                     </div>
                                 </div>
+                                
+                                <div class="detail-row">
+                                    <span class="label">Vehicle</span>
+                                    <span class="value"><?php echo htmlspecialchars($_SESSION['vehicle_info']); ?></span>
+                                </div>
+                                
+                                <div class="detail-row">
+                                    <span class="label">ETA</span>
+                                    <span class="value eta-time"><?php echo htmlspecialchars($_SESSION['eta']); ?></span>
+                                </div>
                             </div>
-                            
-                            <div class="detail-row">
-                                <span class="label">Vehicle</span>
-                                <span class="value">Bao-Bao 5982</span>
+                            <div class="ride-actions">
+                                <form action="ride_arrived_process.php" method="POST">
+                                    <button type="submit" class="btn btn-primary btn-full">I have arrived</button>
+                                </form>
                             </div>
-                            
-                            <div class="detail-row">
-                                <span class="label">ETA</span>
-                                <span class="value eta-time">5 minutes</span>
+                        </div>
+                    </section>
+                <?php elseif ($rideStatus === 'arrived_at_destination'): ?>
+                    <section class="dashboard-card current-ride-card" data-animate="slideUp" data-delay="400">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2" fill="none"/>
+                                </svg>
                             </div>
+                            <h2>Current Ride</h2>
                         </div>
                         
-                        <div class="ride-actions">
-                            <button class="btn btn-outline btn-small" onclick="callDriver()">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" stroke="currentColor" stroke-width="2" fill="none"/>
-                                </svg>
-                                Call
-                            </button>
-                            <button class="btn btn-outline btn-small" onclick="messageDriver()">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" stroke-width="2" fill="none"/>
-                                </svg>
-                                Message
-                            </button>
+                        <div class="ride-status">
+                            <div class="status-badge driver-arrived">Arrived at Destination</div>
+                            <div class="ride-details">
+                                <p>You have arrived at your destination!</p>
+                                <p>Total Bill: <strong>₱<?php echo htmlspecialchars($ridePrice); ?></strong></p>
+                            </div>
+                            <div class="ride-actions full-width">
+                                <form action="ride_completed_process.php" method="POST">
+                                    <button type="submit" class="btn btn-primary btn-full">Pay Bill</button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                <?php endif; ?>
 
                 <section class="dashboard-card recent-rides-card" data-animate="slideUp" data-delay="600">
                     <div class="card-header">
@@ -236,49 +270,33 @@ $userName = $_SESSION['user_name'];
                     </div>
                     
                     <div class="rides-list">
-                        <div class="ride-item" onclick="showRideDetails('ride1')">
-                            <div class="ride-icon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
-                                    <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" fill="none"/>
-                                </svg>
-                            </div>
-                            <div class="ride-info">
-                                <div class="ride-route">DORSU → Don Luis</div>
-                                <div class="ride-date">June 27, 2025 • 4:30 PM</div>
-                            </div>
-                            <div class="ride-price">
-                                <span class="price">₱220</span>
-                                <div class="rating">
-                                    <span>4.8</span>
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700">
-                                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-                                    </svg>
+                        <?php if (isset($_SESSION['ride_history'])): ?>
+                            <?php foreach ($_SESSION['ride_history'] as $ride): ?>
+                                <div class="ride-item" onclick="showRideDetails()">
+                                    <div class="ride-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                                            <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" fill="none"/>
+                                        </svg>
+                                    </div>
+                                    <div class="ride-info">
+                                        <div class="ride-route"><?php echo htmlspecialchars($ride['pickup']); ?> → <?php echo htmlspecialchars($ride['dropoff']); ?></div>
+                                        <div class="ride-date"><?php echo htmlspecialchars($ride['date']); ?></div>
+                                    </div>
+                                    <div class="ride-price">
+                                        <span class="price">₱<?php echo htmlspecialchars($ride['price']); ?></span>
+                                        <div class="rating">
+                                            <span>4.8</span>
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700">
+                                                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                                            </svg>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <div class="ride-item" onclick="showRideDetails('ride2')">
-                            <div class="ride-icon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
-                                    <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" fill="none"/>
-                                </svg>
-                            </div>
-                            <div class="ride-info">
-                                <div class="ride-route">Matiag → Novo</div>
-                                <div class="ride-date">June 26, 2025 • 2:30 PM</div>
-                            </div>
-                            <div class="ride-price">
-                                <span class="price">₱220</span>
-                                <div class="rating">
-                                    <span>4.8</span>
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700">
-                                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p>No recent rides found.</p>
+                        <?php endif; ?>
                     </div>
                     
                     <button class="btn btn-outline btn-full" onclick="showAllRides()">View All Rides</button>
@@ -287,13 +305,20 @@ $userName = $_SESSION['user_name'];
         </div>
     </main>
 
-    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
-    
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
         <p>Finding your ride...</p>
     </div>
-
     <script src="dashboard-script.js"></script>
+    <script>
+        document.getElementById('bookingForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            document.getElementById('loadingOverlay').classList.add('active');
+            const randomDelay = Math.random() * 5000 + 5000;
+            setTimeout(() => {
+                this.submit();
+            }, randomDelay);
+        });
+    </script>
 </body>
 </html>
