@@ -2,6 +2,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+session_start();
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
@@ -18,8 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("❌ Connection failed: " . $conn->connect_error);
     }
 
-    // ✅ Prepare SQL statement to find the user by email
-    $sql = "SELECT password FROM users WHERE email = ?";
+    // ✅ Prepare SQL statement to find the user and their name by email
+    $sql = "SELECT password, name FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
@@ -28,17 +30,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            // User found, verify password
             $row = $result->fetch_assoc();
             $hashedPassword = $row['password'];
 
             if (password_verify($password, $hashedPassword)) {
-                echo "✅ You are a user for this website!";
+                // User is authenticated, store user info in session
+                $_SESSION['user_email'] = $email;
+                $_SESSION['user_name'] = $row['name'];
+
+                // Redirect to the dashboard
+                header("Location: dashboard.php");
+                exit();
             } else {
                 echo "❌ Incorrect password. Please try again.";
             }
         } else {
-            // User not found
             echo "❌ Register first.";
         }
         $stmt->close();
