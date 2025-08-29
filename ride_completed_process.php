@@ -6,16 +6,6 @@ session_start();
 
 
 
-if (!isset($_SESSION['user_email'])) {
-    echo "❌ Error: User email session variable is not set.";
-    exit();
-}
-
-$userEmail = $_SESSION['user_email'];
-
-// Temporary line to check the email
-echo "User email: " . $userEmail . "<br>"; 
-
 // Redirect if the user is not logged in
 if (!isset($_SESSION['user_email'])) {
     header("Location: login.html");
