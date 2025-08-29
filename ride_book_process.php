@@ -44,8 +44,8 @@ $sql = "INSERT INTO rides (user_email, pickup_location, dropoff_location, ride_p
 $stmt = $conn->prepare($sql);
 
 if ($stmt) {
-    // Bind parameters and execute the statement
-    $stmt->bind_param("sssds", $userEmail, $pickupLocation, $dropoffLocation, $ridePrice, $randomDriver, $vehicleInfo);
+    // ✅ FIX: The 'ssssss' string now correctly matches the six variables being bound.
+    $stmt->bind_param("ssssss", $userEmail, $pickupLocation, $dropoffLocation, $ridePrice, $randomDriver, $vehicleInfo);
     $stmt->execute();
     $stmt->close();
 } else {
