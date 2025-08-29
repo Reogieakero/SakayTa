@@ -1,21 +1,46 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
 
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
-    $action = $_POST['action'];
-
-    if ($action === 'accept') {
-        $_SESSION['ride_status'] = 'accepted';
-    } elseif ($action === 'decline') {
-        $_SESSION['ride_status'] = 'declined';
-    }
-    
-    // Redirect back to the dashboard to show the updated content
-    header("Location: dashboard.php");
+if (!isset($_SESSION['user_email']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: login.html");
     exit();
-} else {
-    // If accessed improperly, just go back to the dashboard
+}
+
+require_once __DIR__ . '/db.php';
+
+$action = $_POST['action'] ?? '';
+$userEmail = $_SESSION['user_email'];
+
+if (!in_array($action, ['accept','decline'], true)) {
     header("Location: dashboard.php");
     exit();
 }
-?>
+
+$conn = db();
+
+if ($action === 'accept') {
+    $sql = "UPDATE rides
+            SET ride_status='accepted'
+            WHERE user_email=? AND ride_status='driver_assigned'
+            ORDER BY ride_date DESC
+            LIMIT 1";
+    $_SESSION['notification'] = 'Ride accepted! Driver is on the way.';
+} else { // decline
+    $sql = "UPDATE rides
+            SET ride_status='declined'
+            WHERE user_email=? AND ride_status='driver_assigned'
+            ORDER BY ride_date DESC
+            LIMIT 1";
+    $_SESSION['notification'] = 'Ride declined. You can book again.';
+}
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $userEmail);
+$stmt->execute();
+$stmt->close();
+$conn->close();
+
+header("Location: dashboard.php");
+exit();
