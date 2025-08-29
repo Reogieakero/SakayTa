@@ -46,5 +46,5 @@ $conn->close();
 */
 
 // Include the HTML content
-include('dashboard.html');
+include('dashboardPassenger.php');
 ?>
