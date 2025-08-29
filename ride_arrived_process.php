@@ -1,46 +1,54 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 
-// Check if a ride is in progress and the button was clicked
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['ride_status']) && $_SESSION['ride_status'] === 'accepted') {
-
-    // ✅ Connect to MySQL
-    $servername = "localhost";
-    $username   = "root";
-    $dbpassword = "";
-    $dbname     = "sakay_ta";
-
-    $conn = new mysqli($servername, $username, $dbpassword, $dbname);
-
-    if ($conn->connect_error) {
-        die("❌ Connection failed: " . $conn->connect_error);
-    }
-
-    // Get ride data from session
-    $userEmail       = $_SESSION['user_email'];
-    $pickupLocation  = $_SESSION['pickup_location'] ?? 'Unknown';
-    $dropoffLocation = $_SESSION['dropoff_location'] ?? 'Unknown';
-    $ridePrice       = $_SESSION['ride_price'] ?? 0;
-    $driverName      = $_SESSION['driver_name'] ?? 'Unknown';
-    $vehicleInfo     = $_SESSION['vehicle_info'] ?? 'Unknown';
-
-    // Prepare an insert statement to save ride details to the database
-    $sql = "INSERT INTO rides (user_email, pickup_location, dropoff_location, ride_price, driver_name, vehicle_info) VALUES (?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssdss", $userEmail, $pickupLocation, $dropoffLocation, $ridePrice, $driverName, $vehicleInfo);
-    $stmt->execute();
-    $stmt->close();
-    $conn->close();
-
-    // Set ride status to 'arrived_at_destination' to trigger the "Pay Bill" card
-    $_SESSION['ride_status'] = 'arrived_at_destination';
-
-    // Redirect back to the dashboard
-    header("Location: dashboard.php");
-    exit();
-} else {
-    // If accessed directly or no ride is active, redirect to dashboard
-    header("Location: dashboard.php");
+// Redirect if the user is not logged in
+if (!isset($_SESSION['user_email'])) {
+    header("Location: login.html");
     exit();
 }
+
+// Connect to the database
+$servername = "localhost";
+$username   = "root";
+$dbpassword = "";
+$dbname     = "sakay_ta";
+
+$conn = new mysqli($servername, $username, $dbpassword, $dbname);
+
+if ($conn->connect_error) {
+    die("❌ Connection failed: " . $conn->connect_error);
+}
+
+// ✅ Update the ride status in the database
+// The 'ride_book_process.php' script should have stored the last ride's ID
+// You will need to add a way to get the ride ID, for this example we'll assume it's in the session.
+// For now, let's just update the most recent ride for the user.
+$userEmail = $_SESSION['user_email'];
+
+// Update the most recent ride for the user
+$sql = "UPDATE rides SET ride_status = 'arrived_at_destination' WHERE user_email = ? ORDER BY ride_date DESC LIMIT 1";
+$stmt = $conn->prepare($sql);
+
+if ($stmt) {
+    $stmt->bind_param("s", $userEmail);
+    $stmt->execute();
+    $stmt->close();
+} else {
+    echo "❌ Error preparing statement: " . $conn->error;
+    $conn->close();
+    exit();
+}
+
+// ✅ Update the session to reflect the new status
+$_SESSION['ride_status'] = 'arrived_at_destination';
+$_SESSION['notification'] = 'You have arrived at your destination! Please proceed to payment.';
+
+$conn->close();
+
+// Redirect back to the dashboard
+header("Location: dashboard.php");
+exit();
 ?>

@@ -12,32 +12,7 @@ $userName = $_SESSION['user_name'];
 
 // Check the current ride status
 $rideStatus = $_SESSION['ride_status'] ?? 'none';
-$ridePrice = $_SESSION['ride_price'] ?? '0';
-
-// ✅ Connect to MySQL to fetch ride history
-$servername = "localhost";
-$username   = "root";
-$dbpassword = "";
-$dbname     = "sakay_ta";
-
-$conn = new mysqli($servername, $username, $dbpassword, $dbname);
-
-if ($conn->connect_error) {
-    die("❌ Connection failed: " . $conn->connect_error);
-}
-
-// Fetch the user's recent rides from the database, ordered by most recent
-$sql = "SELECT pickup_location, dropoff_location, ride_price, ride_date, driver_name, vehicle_info FROM rides WHERE user_email = ? ORDER BY ride_date DESC LIMIT 5";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $userEmail);
-$stmt->execute();
-$result = $stmt->get_result();
-$rideHistory = [];
-while ($row = $result->fetch_assoc()) {
-    $rideHistory[] = $row;
-}
-$stmt->close();
-$conn->close();
+$ridePrice = $_SESSION['ride_price'] ?? '0'; // Fix: Set a default value to prevent the warning.
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -116,7 +91,7 @@ $conn->close();
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" stroke="currentColor" stroke-width="2" fill="none"/>
                                     <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
                                 </svg>
-                                <input type="text" id="pickup" placeholder="Enter pickup location" required>
+                                <input type="text" id="pickup" name="pickup_location" placeholder="Enter pickup location" required>
                             </div>
                         </div>
                         
@@ -127,7 +102,7 @@ $conn->close();
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" stroke="currentColor" stroke-width="2" fill="none"/>
                                     <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
                                 </svg>
-                                <input type="text" id="dropoff" placeholder="Enter destination" required>
+                                <input type="text" id="dropoff" name="dropoff_location" placeholder="Enter destination" required>
                             </div>
                         </div>
                         
@@ -147,8 +122,6 @@ $conn->close();
                                 </div>
                             </div>
                         </div>
-                        
-                        <input type="hidden" name="ride_price" id="ridePriceInput" value="220">
                         
                         <button type="submit" class="btn btn-orange btn-full btn-animated">
                             <span>Book Now</span>
@@ -273,24 +246,6 @@ $conn->close();
                         <div class="ride-status">
                             <div class="status-badge driver-arrived">Arrived at Destination</div>
                             <div class="ride-details">
-                                <div class="detail-row">
-                                    <span class="label">Driver</span>
-                                    <div class="driver-info">
-                                        <span class="driver-name"><?php echo htmlspecialchars($_SESSION['driver_name']); ?></span>
-                                        <div class="rating">
-                                            <span>4.8</span>
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700">
-                                                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="detail-row">
-                                    <span class="label">Vehicle</span>
-                                    <span class="value"><?php echo htmlspecialchars($_SESSION['vehicle_info']); ?></span>
-                                </div>
-                                
                                 <p>You have arrived at your destination!</p>
                                 <p>Total Bill: <strong>₱<?php echo htmlspecialchars($ridePrice); ?></strong></p>
                             </div>
@@ -315,9 +270,9 @@ $conn->close();
                     </div>
                     
                     <div class="rides-list">
-                        <?php if (!empty($rideHistory)): ?>
-                            <?php foreach ($rideHistory as $ride): ?>
-                                <div class="ride-item">
+                        <?php if (isset($_SESSION['ride_history'])): ?>
+                            <?php foreach ($_SESSION['ride_history'] as $ride): ?>
+                                <div class="ride-item" onclick="showRideDetails()">
                                     <div class="ride-icon">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -325,15 +280,11 @@ $conn->close();
                                         </svg>
                                     </div>
                                     <div class="ride-info">
-                                        <div class="ride-route"><?php echo htmlspecialchars($ride['pickup_location']); ?> → <?php echo htmlspecialchars($ride['dropoff_location']); ?></div>
-                                        <div class="ride-date"><?php echo htmlspecialchars(date('F j, Y • g:i A', strtotime($ride['ride_date']))); ?></div>
-                                        <div class="driver-info-list">
-                                            <span>Driver: <?php echo htmlspecialchars($ride['driver_name']); ?></span>
-                                            <span>Vehicle: <?php echo htmlspecialchars($ride['vehicle_info']); ?></span>
-                                        </div>
+                                        <div class="ride-route"><?php echo htmlspecialchars($ride['pickup']); ?> → <?php echo htmlspecialchars($ride['dropoff']); ?></div>
+                                        <div class="ride-date"><?php echo htmlspecialchars($ride['date']); ?></div>
                                     </div>
                                     <div class="ride-price">
-                                        <span class="price">₱<?php echo htmlspecialchars(number_format($ride['ride_price'], 2)); ?></span>
+                                        <span class="price">₱<?php echo htmlspecialchars($ride['price']); ?></span>
                                         <div class="rating">
                                             <span>4.8</span>
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700">
@@ -367,25 +318,6 @@ $conn->close();
             setTimeout(() => {
                 this.submit();
             }, randomDelay);
-        });
-
-        // ✅ New JavaScript to handle price selection
-        document.addEventListener('DOMContentLoaded', function() {
-            const optionCards = document.querySelectorAll('.option-card');
-            const ridePriceInput = document.getElementById('ridePriceInput');
-
-            optionCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    // Remove 'active' class from all cards
-                    optionCards.forEach(c => c.classList.remove('active'));
-                    
-                    // Add 'active' class to the clicked card
-                    this.classList.add('active');
-                    
-                    // Update the hidden input field with the selected price
-                    ridePriceInput.value = this.dataset.price;
-                });
-            });
         });
     </script>
 </body>
