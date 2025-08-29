@@ -22,34 +22,20 @@ $ridePrice = $_SESSION['ride_price'] ?? '0'; // Fix: Set a default value to prev
     <title>Passenger Dashboard - Sakay Ta</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="dashboard-styles.css">
-    <style>
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: white;
-            z-index: 1000;
-        }
-        .loading-overlay.active { display: flex; }
-        .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 4px solid #fff;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+
 </head>
 <body>
+    <?php
+    if (isset($_SESSION['notification'])): ?>
+        <div class="notification-success" id="notification">
+            <p><?php echo htmlspecialchars($_SESSION['notification']); ?></p>
+            <button class="close-btn" onclick="document.getElementById('notification').style.display='none';">&times;</button>
+        </div>
+    <?php
+    unset($_SESSION['notification']);
+    endif;
+    ?>
+
     <header class="header">
         <div class="container">
             <div class="logo">
@@ -284,49 +270,33 @@ $ridePrice = $_SESSION['ride_price'] ?? '0'; // Fix: Set a default value to prev
                     </div>
                     
                     <div class="rides-list">
-                        <div class="ride-item" onclick="showRideDetails('ride1')">
-                            <div class="ride-icon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
-                                    <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" fill="none"/>
-                                </svg>
-                            </div>
-                            <div class="ride-info">
-                                <div class="ride-route">DORSU → Don Luis</div>
-                                <div class="ride-date">June 27, 2025 • 4:30 PM</div>
-                            </div>
-                            <div class="ride-price">
-                                <span class="price">₱220</span>
-                                <div class="rating">
-                                    <span>4.8</span>
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700">
-                                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-                                    </svg>
+                        <?php if (isset($_SESSION['ride_history'])): ?>
+                            <?php foreach ($_SESSION['ride_history'] as $ride): ?>
+                                <div class="ride-item" onclick="showRideDetails()">
+                                    <div class="ride-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                                            <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" fill="none"/>
+                                        </svg>
+                                    </div>
+                                    <div class="ride-info">
+                                        <div class="ride-route"><?php echo htmlspecialchars($ride['pickup']); ?> → <?php echo htmlspecialchars($ride['dropoff']); ?></div>
+                                        <div class="ride-date"><?php echo htmlspecialchars($ride['date']); ?></div>
+                                    </div>
+                                    <div class="ride-price">
+                                        <span class="price">₱<?php echo htmlspecialchars($ride['price']); ?></span>
+                                        <div class="rating">
+                                            <span>4.8</span>
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700">
+                                                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                                            </svg>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <div class="ride-item" onclick="showRideDetails('ride2')">
-                            <div class="ride-icon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
-                                    <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" fill="none"/>
-                                </svg>
-                            </div>
-                            <div class="ride-info">
-                                <div class="ride-route">Matiag → Novo</div>
-                                <div class="ride-date">June 26, 2025 • 2:30 PM</div>
-                            </div>
-                            <div class="ride-price">
-                                <span class="price">₱220</span>
-                                <div class="rating">
-                                    <span>4.8</span>
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700">
-                                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p>No recent rides found.</p>
+                        <?php endif; ?>
                     </div>
                     
                     <button class="btn btn-outline btn-full" onclick="showAllRides()">View All Rides</button>
