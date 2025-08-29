@@ -346,37 +346,61 @@ $conn->close();
         <p>Finding your ride...</p>
     </div>
     <script src="dashboard-script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const bookingForm = document.getElementById('bookingForm');
-            const rideOptionCards = document.querySelectorAll('.ride-options .option-card');
-            const ridePriceInput = document.getElementById('ridePriceInput');
-            const loadingOverlay = document.getElementById('loadingOverlay');
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const bookingForm = document.getElementById('bookingForm');
+                const rideOptionCards = document.querySelectorAll('.ride-options .option-card');
+                const ridePriceInput = document.getElementById('ridePriceInput');
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                const arrivedForm = document.getElementById('arrivedForm');
+                const payBillForm = document.getElementById('payBillForm');
 
-            // Handle card selection
-            rideOptionCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    // Remove 'active' class from all cards
-                    rideOptionCards.forEach(c => c.classList.remove('active'));
-                    // Add 'active' class to the clicked card
-                    card.classList.add('active');
-                    // Update the hidden input value with the data-price attribute
-                    ridePriceInput.value = card.dataset.price;
+                // Handle card selection
+                rideOptionCards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        rideOptionCards.forEach(c => c.classList.remove('active'));
+                        card.classList.add('active');
+                        ridePriceInput.value = card.dataset.price;
+                    });
                 });
+
+                // Handle form submission with a 5-second delay to simulate ride booking, arrival, and completion
+                if (bookingForm) {
+                    bookingForm.addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        loadingOverlay.classList.add('active');
+
+                        // Simulate the booking and arrival process in a single 5-second delay
+                        setTimeout(() => {
+                            this.submit();
+                        }, 5000); // 5000 milliseconds = 5 seconds
+                    });
+                }
             });
 
-            // Handle form submission with loading overlay
-            bookingForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                loadingOverlay.classList.add('active');
-                
-                // Simulate a delay before submitting the form
-                const randomDelay = Math.random() * 5000 + 5000;
-                setTimeout(() => {
-                    this.submit();
-                }, randomDelay);
+            // Automatically click the "I have arrived" and "Pay Bill" buttons
+            // This script will run on every page load and will trigger based on the ride status
+            window.addEventListener('load', () => {
+                // If the ride status is 'accepted', automatically trigger the 'arrived' process after a short delay
+                if ('<?php echo $rideStatus; ?>' === 'accepted') {
+                    setTimeout(() => {
+                        const arrivedForm = document.querySelector('form[action="ride_arrived_process.php"]');
+                        if (arrivedForm) {
+                            arrivedForm.submit();
+                        }
+                    }, 100); // Small delay to ensure the page loads completely
+                }
+
+                // If the ride status is 'arrived_at_destination', automatically trigger the 'completed' process
+                if ('<?php echo $rideStatus; ?>' === 'arrived_at_destination') {
+                    setTimeout(() => {
+                        const payBillForm = document.querySelector('form[action="ride_completed_process.php"]');
+                        if (payBillForm) {
+                            payBillForm.submit();
+                        }
+                    }, 100); // Small delay before paying
+                }
             });
-        });
-    </script>
+</script>
 </body>
 </html>
