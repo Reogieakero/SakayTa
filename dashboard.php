@@ -1,3 +1,15 @@
+<?php
+session_start();
+
+// Redirect to login page if user is not logged in
+if (!isset($_SESSION['user_email'])) {
+    header("Location: login.html");
+    exit();
+}
+
+$userEmail = $_SESSION['user_email'];
+$userName = $_SESSION['user_name'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +35,7 @@
                 <h1 class="dashboard-title">Passenger Dashboard</h1>
                 <div class="user-menu">
                     <div class="user-avatar">
-                        <span>JD</span>
+                        <span><?php echo htmlspecialchars(substr($userName, 0, 1) . substr(strstr($userName, ' '), 1, 1)); ?></span>
                     </div>
                     <button class="menu-toggle" onclick="toggleUserMenu()">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -44,7 +56,6 @@
         <div class="dashboard-background"></div>
         <div class="container">
             <div class="dashboard-grid">
-                <!-- Book Your Ride Section -->
                 <section class="dashboard-card book-ride-card" data-animate="slideUp">
                     <div class="card-header">
                         <div class="card-icon">
@@ -102,7 +113,6 @@
                     </form>
                 </section>
 
-                <!-- My Account Section -->
                 <section class="dashboard-card account-card" data-animate="slideUp" data-delay="200">
                     <div class="card-header">
                         <div class="card-icon">
@@ -158,7 +168,6 @@
                     <button class="btn btn-primary btn-full">Settings</button>
                 </section>
 
-                <!-- Current Ride Section -->
                 <section class="dashboard-card current-ride-card" data-animate="slideUp" data-delay="400">
                     <div class="card-header">
                         <div class="card-icon">
@@ -215,7 +224,6 @@
                     </div>
                 </section>
 
-                <!-- Recent Rides Section -->
                 <section class="dashboard-card recent-rides-card" data-animate="slideUp" data-delay="600">
                     <div class="card-header">
                         <div class="card-icon">
@@ -279,10 +287,8 @@
         </div>
     </main>
 
-    <!-- Modal Overlay -->
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
     
-    <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
         <p>Finding your ride...</p>
