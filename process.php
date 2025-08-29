@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     // Database connection
-    $conn = new mysqli("localhost", "root", "", "sakay_ta");
+    $conn = new mysqli("localhost:3307", "root", "", "sakay_ta");
 
     if ($conn->connect_error) {
         die("❌ Connection failed: " . $conn->connect_error);
@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($stmt->execute()) {
         // ✅ Redirect to login page with success
         header("Location: login.html?success=1");
-        exit();
+        exit(); 
     } else {
         echo "❌ Error: " . $stmt->error;
     }
