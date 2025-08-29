@@ -9,6 +9,33 @@ if (!isset($_SESSION['user_email'])) {
 
 $userEmail = $_SESSION['user_email'];
 $userName = $_SESSION['user_name'];
+
+// Create arrays for random data
+$drivers = ["Sitoy Santos", "Juan dela Cruz", "Maria Alcantara", "Pedro Amada"];
+$vehicles = ["Bao-bao", "Pedicab", "Motor"];
+
+// Generate random data for the "Current Ride" card
+// You would trigger this logic after a successful ride booking process.
+// For this example, we'll set it here to demonstrate the randomization.
+if (!isset($_SESSION['current_ride_active'])) {
+    // Select a random driver
+    $randomDriverKey = array_rand($drivers);
+    $_SESSION['driver_name'] = $drivers[$randomDriverKey];
+
+    // Select a random vehicle type and generate a random body number
+    $randomVehicleKey = array_rand($vehicles);
+    $bodyNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
+    $_SESSION['vehicle_info'] = $vehicles[$randomVehicleKey] . ' ' . $bodyNumber;
+
+    // Generate a random ETA
+    $_SESSION['eta'] = rand(2, 10) . ' minutes';
+
+    // Set the flag to indicate a ride is active
+    $_SESSION['current_ride_active'] = true;
+}
+
+$hasCurrentRide = isset($_SESSION['current_ride_active']) && $_SESSION['current_ride_active'] === true;
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -168,61 +195,63 @@ $userName = $_SESSION['user_name'];
                     <button class="btn btn-primary btn-full">Settings</button>
                 </section>
 
-                <section class="dashboard-card current-ride-card" data-animate="slideUp" data-delay="400">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
-                                <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2" fill="none"/>
-                            </svg>
+                <?php if ($hasCurrentRide): ?>
+                    <section class="dashboard-card current-ride-card" data-animate="slideUp" data-delay="400">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2" fill="none"/>
+                                </svg>
+                            </div>
+                            <h2>Current Ride</h2>
                         </div>
-                        <h2>Current Ride</h2>
-                    </div>
-                    
-                    <div class="ride-status">
-                        <div class="status-badge driver-en-route">Driver En Route</div>
                         
-                        <div class="ride-details">
-                            <div class="detail-row">
-                                <span class="label">Driver</span>
-                                <div class="driver-info">
-                                    <span class="driver-name">Sitoy Santos</span>
-                                    <div class="rating">
-                                        <span>4.8</span>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700">
-                                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-                                        </svg>
+                        <div class="ride-status">
+                            <div class="status-badge driver-en-route">Driver En Route</div>
+                            
+                            <div class="ride-details">
+                                <div class="detail-row">
+                                    <span class="label">Driver</span>
+                                    <div class="driver-info">
+                                        <span class="driver-name"><?php echo htmlspecialchars($_SESSION['driver_name']); ?></span>
+                                        <div class="rating">
+                                            <span>4.8</span>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700">
+                                                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                                            </svg>
+                                        </div>
                                     </div>
+                                </div>
+                                
+                                <div class="detail-row">
+                                    <span class="label">Vehicle</span>
+                                    <span class="value"><?php echo htmlspecialchars($_SESSION['vehicle_info']); ?></span>
+                                </div>
+                                
+                                <div class="detail-row">
+                                    <span class="label">ETA</span>
+                                    <span class="value eta-time"><?php echo htmlspecialchars($_SESSION['eta']); ?></span>
                                 </div>
                             </div>
                             
-                            <div class="detail-row">
-                                <span class="label">Vehicle</span>
-                                <span class="value">Bao-Bao 5982</span>
-                            </div>
-                            
-                            <div class="detail-row">
-                                <span class="label">ETA</span>
-                                <span class="value eta-time">5 minutes</span>
+                            <div class="ride-actions">
+                                <button class="btn btn-outline btn-small" onclick="callDriver()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    </svg>
+                                    Call
+                                </button>
+                                <button class="btn btn-outline btn-small" onclick="messageDriver()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    </svg>
+                                    Message
+                                </button>
                             </div>
                         </div>
-                        
-                        <div class="ride-actions">
-                            <button class="btn btn-outline btn-small" onclick="callDriver()">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" stroke="currentColor" stroke-width="2" fill="none"/>
-                                </svg>
-                                Call
-                            </button>
-                            <button class="btn btn-outline btn-small" onclick="messageDriver()">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" stroke-width="2" fill="none"/>
-                                </svg>
-                                Message
-                            </button>
-                        </div>
-                    </div>
-                </section>
+                    </section>
+                <?php endif; ?>
 
                 <section class="dashboard-card recent-rides-card" data-animate="slideUp" data-delay="600">
                     <div class="card-header">
