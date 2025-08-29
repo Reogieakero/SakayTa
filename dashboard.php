@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 
 // Redirect to login page if user is not logged in
@@ -10,9 +13,39 @@ if (!isset($_SESSION['user_email'])) {
 $userEmail = $_SESSION['user_email'];
 $userName = $_SESSION['user_name'];
 
-// Check the current ride status
+// Check the current ride status from the session
 $rideStatus = $_SESSION['ride_status'] ?? 'none';
-$ridePrice = $_SESSION['ride_price'] ?? '0'; // Fix: Set a default value to prevent the warning.
+$ridePrice = $_SESSION['ride_price'] ?? '0';
+
+// ✅ Connect to the database to fetch recent rides
+$servername = "localhost";
+$username   = "root";
+$dbpassword = "";
+$dbname     = "sakay_ta";
+
+$conn = new mysqli($servername, $username, $dbpassword, $dbname);
+
+if ($conn->connect_error) {
+    die("❌ Connection failed: " . $conn->connect_error);
+}
+
+// ✅ Query for the 3 most recent completed rides
+$sql = "SELECT pickup_location, dropoff_location, ride_price, ride_date FROM rides WHERE user_email = ? AND ride_status = 'completed' ORDER BY ride_date DESC LIMIT 3";
+$stmt = $conn->prepare($sql);
+$rides = [];
+
+if ($stmt) {
+    $stmt->bind_param("s", $userEmail);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    while ($row = $result->fetch_assoc()) {
+        $rides[] = $row;
+    }
+    $stmt->close();
+}
+
+$conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,7 +55,6 @@ $ridePrice = $_SESSION['ride_price'] ?? '0'; // Fix: Set a default value to prev
     <title>Passenger Dashboard - Sakay Ta</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="dashboard-styles.css">
-
 </head>
 <body>
     <?php
@@ -270,9 +302,9 @@ $ridePrice = $_SESSION['ride_price'] ?? '0'; // Fix: Set a default value to prev
                     </div>
                     
                     <div class="rides-list">
-                        <?php if (isset($_SESSION['ride_history'])): ?>
-                            <?php foreach ($_SESSION['ride_history'] as $ride): ?>
-                                <div class="ride-item" onclick="showRideDetails()">
+                        <?php if (count($rides) > 0): ?>
+                            <?php foreach ($rides as $ride): ?>
+                                <div class="ride-item">
                                     <div class="ride-icon">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -280,17 +312,11 @@ $ridePrice = $_SESSION['ride_price'] ?? '0'; // Fix: Set a default value to prev
                                         </svg>
                                     </div>
                                     <div class="ride-info">
-                                        <div class="ride-route"><?php echo htmlspecialchars($ride['pickup']); ?> → <?php echo htmlspecialchars($ride['dropoff']); ?></div>
-                                        <div class="ride-date"><?php echo htmlspecialchars($ride['date']); ?></div>
+                                        <div class="ride-route"><?php echo htmlspecialchars($ride['pickup_location']); ?> → <?php echo htmlspecialchars($ride['dropoff_location']); ?></div>
+                                        <div class="ride-date"><?php echo date("F d, Y • h:i A", strtotime($ride['ride_date'])); ?></div>
                                     </div>
                                     <div class="ride-price">
-                                        <span class="price">₱<?php echo htmlspecialchars($ride['price']); ?></span>
-                                        <div class="rating">
-                                            <span>4.8</span>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700">
-                                                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-                                            </svg>
-                                        </div>
+                                        <span class="price">₱<?php echo htmlspecialchars($ride['ride_price']); ?></span>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -299,7 +325,7 @@ $ridePrice = $_SESSION['ride_price'] ?? '0'; // Fix: Set a default value to prev
                         <?php endif; ?>
                     </div>
                     
-                    <button class="btn btn-outline btn-full" onclick="showAllRides()">View All Rides</button>
+                    <a href="view_all_rides.php" class="btn btn-outline btn-full">View All Rides</a>
                 </section>
             </div>
         </div>
