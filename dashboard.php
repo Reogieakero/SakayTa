@@ -12,6 +12,7 @@ $userName = $_SESSION['user_name'];
 
 // Check the current ride status
 $rideStatus = $_SESSION['ride_status'] ?? 'none';
+$ridePrice = $_SESSION['ride_price'] ?? '0'; // Fix: Set a default value to prevent the warning.
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -260,7 +261,7 @@ $rideStatus = $_SESSION['ride_status'] ?? 'none';
                             <div class="status-badge driver-arrived">Arrived at Destination</div>
                             <div class="ride-details">
                                 <p>You have arrived at your destination!</p>
-                                <p>Total Bill: <strong>₱<?php echo htmlspecialchars($_SESSION['ride_price']); ?></strong></p>
+                                <p>Total Bill: <strong>₱<?php echo htmlspecialchars($ridePrice); ?></strong></p>
                             </div>
                             <div class="ride-actions full-width">
                                 <form action="ride_completed_process.php" method="POST">
@@ -270,6 +271,7 @@ $rideStatus = $_SESSION['ride_status'] ?? 'none';
                         </div>
                     </section>
                 <?php endif; ?>
+
                 <section class="dashboard-card recent-rides-card" data-animate="slideUp" data-delay="600">
                     <div class="card-header">
                         <div class="card-icon">
@@ -332,6 +334,7 @@ $rideStatus = $_SESSION['ride_status'] ?? 'none';
             </div>
         </div>
     </main>
+
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
         <p>Finding your ride...</p>
