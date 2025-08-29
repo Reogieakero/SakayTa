@@ -119,8 +119,8 @@
                             <span>JD</span>
                         </div>
                         <div class="profile-info">
-                            <h3>John Doe</h3>
-                            <p>john.doe@email.com</p>
+                            <h3><?php echo htmlspecialchars($userName); ?></h3>
+                            <p><?php echo htmlspecialchars($userEmail); ?></p>
                         </div>
                     </div>
                     
