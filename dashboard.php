@@ -337,36 +337,37 @@ $conn->close();
         <div class="loading-spinner"></div>
         <p>Finding your ride...</p>
     </div>
-    <script src="dashboard-script.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const bookingForm = document.getElementById('bookingForm');
-        const rideOptionCards = document.querySelectorAll('.ride-options .option-card');
-        const ridePriceInput = document.getElementById('ridePriceInput');
-        const loadingOverlay = document.getElementById('loadingOverlay');
+        <script src="dashboard-script.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const bookingForm = document.getElementById('bookingForm');
+                const rideOptionCards = document.querySelectorAll('.ride-options .option-card');
+                const ridePriceInput = document.getElementById('ridePriceInput');
+                const loadingOverlay = document.getElementById('loadingOverlay');
 
-        // Handle ride option card selection
-        rideOptionCards.forEach(card => {
-            card.addEventListener('click', () => {
-                rideOptionCards.forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                ridePriceInput.value = card.dataset.price;
+                // Handle ride option card selection
+                rideOptionCards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        rideOptionCards.forEach(c => c.classList.remove('active'));
+                        card.classList.add('active');
+                        ridePriceInput.value = card.dataset.price;
+                    });
+                });
+
+                // Handle form submission with a 5-10 second delay for finding a driver
+                if (bookingForm) {
+                    bookingForm.addEventListener('submit', function(event) {
+                        event.preventDefault();
+                        loadingOverlay.classList.add('active');
+
+                        // Simulate a delay of 5-10 seconds before submitting the booking form
+                        const randomDelay = Math.random() * 5000 + 5000;
+                        setTimeout(() => {
+                            this.submit();
+                        }, randomDelay);
+                    });
+                }
             });
-        });
-
-        // Handle form submission with a 5-second delay for the entire ride lifecycle
-        if (bookingForm) {
-            bookingForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                loadingOverlay.classList.add('active');
-
-                // Simulate a 5-second delay before submitting the booking form
-                setTimeout(() => {
-                    this.submit();
-                }, 5000);
-            });
-        }
-    });
 
             // Automatically trigger the 'arrived' and 'completed' processes
             window.addEventListener('load', () => {
@@ -379,7 +380,7 @@ $conn->close();
                         if (arrivedForm) {
                             arrivedForm.submit();
                         }
-                    }, 100); // Small delay to ensure the page loads completely
+                    }, 100);
                 }
 
                 // If the ride status is 'arrived_at_destination,' programmatically submit the 'completed' form
@@ -389,7 +390,7 @@ $conn->close();
                         if (payBillForm) {
                             payBillForm.submit();
                         }
-                    }, 100); // Small delay before submitting the payment
+                    }, 100);
                 }
             });
         </script>
