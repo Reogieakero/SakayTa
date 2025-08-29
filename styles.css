@@ -1,3 +1,24 @@
+
+Transportation system design
+View Project
+
+Publish
+
+Chat
+
+Design
+
+
+
+Enable element selection to make changes
+
+
+
+No file chosen
+Drop files here to add as attachments
+
+
+styles.css
 * {
   margin: 0;
   padding: 0;
@@ -54,10 +75,34 @@ body {
   border-radius: 25px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   text-decoration: none;
   display: inline-block;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.btn:hover::after {
+  width: 300px;
+  height: 300px;
+}
+
+.btn:active {
+  transform: scale(0.95) translateY(2px);
 }
 
 .btn-outline {
@@ -173,34 +218,45 @@ body {
   border-radius: 15px;
   padding: 2rem;
   text-align: center;
-  transition: all 0.3s ease; /* Updated transition to include all properties */
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(45deg);
+  transition: all 0.6s ease;
+  opacity: 0;
+}
+
+.service-card:hover::before {
+  animation: shimmer 1.5s ease-in-out;
 }
 
 .service-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Added a box shadow on hover */
+  transform: translateY(-10px) scale(1.05) rotateX(5deg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
-.service-icon {
-  width: 60px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1rem;
-  color: white;
-}
-
-.service-card h3 {
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
-}
-
-.service-card p {
-  margin-bottom: 1.5rem;
-  opacity: 0.9;
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+    opacity: 0;
+  }
 }
 
 /* Stats Section */
@@ -309,6 +365,24 @@ body {
     width: 100%;
     max-width: 300px;
   }
+
+  /* Adjust car animations for mobile */
+  .car {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+  
+  .car-1 {
+    animation-duration: 12s;
+  }
+  
+  .car-2 {
+    animation-duration: 16s;
+  }
+  
+  .car-3 {
+    animation-duration: 14s;
+  }
 }
 
 @media (max-width: 480px) {
@@ -323,5 +397,158 @@ body {
 
   .stats-grid {
     grid-template-columns: 1fr;
-  } 
+  }
+  
+  /* Further reduce car visibility on very small screens */
+  .moving-cars-container {
+    opacity: 0.3;
+  }
+}
+
+/* Added moving cars animation styles */
+.moving-cars-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.car {
+  position: absolute;
+  opacity: 0.7;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.car-1 {
+  top: 20%;
+  animation: moveCar1 15s infinite;
+  animation-delay: 0s;
+}
+
+.car-2 {
+  top: 60%;
+  animation: moveCar2 20s infinite;
+  animation-delay: -5s;
+}
+
+.car-3 {
+  top: 80%;
+  animation: moveCar3 18s infinite;
+  animation-delay: -10s;
+}
+
+@keyframes moveCar1 {
+  0% {
+    left: -100px;
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(5px) rotate(-0.5deg);
+  }
+  75% {
+    transform: translateY(-5px) rotate(0.5deg);
+  }
+  100% {
+    left: calc(100% + 100px);
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes moveCar2 {
+  0% {
+    right: -100px;
+    left: auto;
+    transform: translateY(0) scaleX(-1);
+  }
+  25% {
+    transform: translateY(8px) scaleX(-1) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-3px) scaleX(-1) rotate(0.5deg);
+  }
+  75% {
+    transform: translateY(6px) scaleX(-1) rotate(-0.5deg);
+  }
+  100% {
+    right: calc(100% + 100px);
+    transform: translateY(0) scaleX(-1);
+  }
+}
+
+@keyframes moveCar3 {
+  0% {
+    left: -100px;
+    transform: translateY(0) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-8px) rotate(1.5deg);
+  }
+  60% {
+    transform: translateY(4px) rotate(-1deg);
+  }
+  100% {
+    left: calc(100% + 100px);
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+/* Added floating road elements for hero section */
+.road-elements {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.road-line {
+  position: absolute;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  animation: roadMove 8s linear infinite;
+}
+
+.road-line-1 {
+  top: 30%;
+  width: 60px;
+  animation-delay: 0s;
+}
+
+.road-line-2 {
+  top: 50%;
+  width: 80px;
+  animation-delay: -2s;
+}
+
+.road-line-3 {
+  top: 70%;
+  width: 40px;
+  animation-delay: -4s;
+}
+
+@keyframes roadMove {
+  0% {
+    left: -100px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% + 100px);
+    opacity: 0;
+  }
 }
