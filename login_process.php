@@ -20,8 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("❌ Connection failed: " . $conn->connect_error);
     }
 
-    // ✅ Prepare SQL statement to find the user and their name by email
-    $sql = "SELECT password, name FROM users WHERE email = ?";
+    // Corrected SQL statement: Select only 'password' and 'role'
+    $sql = "SELECT password, role FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
@@ -36,10 +36,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (password_verify($password, $hashedPassword)) {
                 // User is authenticated, store user info in session
                 $_SESSION['user_email'] = $email;
-                $_SESSION['user_name'] = $row['name'];
+                $_SESSION['user_role'] = $row['role']; // Store the user's role
 
-                // Redirect to the dashboard
-                header("Location: dashboardP.php");
+                // Redirect based on role
+                if ($row['role'] === 'passenger') {
+                    header("Location: dashboardPassenger.php");
+                } elseif ($row['role'] === 'driver') {
+                    header("Location: dashboardDriver.php");
+                }
                 exit();
             } else {
                 echo "❌ Incorrect password. Please try again.";
@@ -49,11 +53,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
         $stmt->close();
     } else {
-        echo "❌ SQL prepare failed: " . $conn->error;
+        echo "❌ Error preparing statement: " . $conn->error;
     }
-
     $conn->close();
-} else {
-    echo "⚠️ Please submit the form.";
 }
 ?>
