@@ -25,10 +25,10 @@
                     <div class="user-avatar">
                         <span><?php echo substr($userName, 0, 2); ?></span>
                     </div>
-                    <div class="user-info">
+                    <!-- <div class="user-info">
                         <span class="user-name"><?php echo htmlspecialchars($userName); ?></span>
                         <a href="logout.php" class="logout-link">Log Out</a>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
