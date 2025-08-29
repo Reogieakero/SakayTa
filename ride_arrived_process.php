@@ -1,13 +1,7 @@
 <?php
 session_start();
 
-// Check if user is logged in
-if (!isset($_SESSION['user_email'])) {
-    header("Location: login.html");
-    exit();
-}
-
-// Check if a ride is in progress
+// Check if a ride is in progress and the button was clicked
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['ride_status']) && $_SESSION['ride_status'] === 'accepted') {
 
     // ✅ Connect to MySQL
@@ -22,23 +16,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['ride_status']) && 
         die("❌ Connection failed: " . $conn->connect_error);
     }
 
+    // Get ride data from session
+    $userEmail       = $_SESSION['user_email'];
+    $pickupLocation  = $_SESSION['pickup_location'] ?? 'Unknown';
+    $dropoffLocation = $_SESSION['dropoff_location'] ?? 'Unknown';
+    $ridePrice       = $_SESSION['ride_price'] ?? 0;
+    $driverName      = $_SESSION['driver_name'] ?? 'Unknown';
+    $vehicleInfo     = $_SESSION['vehicle_info'] ?? 'Unknown';
+
     // Prepare an insert statement to save ride details to the database
     $sql = "INSERT INTO rides (user_email, pickup_location, dropoff_location, ride_price, driver_name, vehicle_info) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-
-    // Get ride data from session
-    $userEmail      = $_SESSION['user_email'];
-    $pickupLocation = $_SESSION['pickup_location'] ?? 'Unknown';
-    $dropoffLocation = $_SESSION['dropoff_location'] ?? 'Unknown';
-    $ridePrice      = $_SESSION['ride_price'] ?? 0;
-    $driverName     = $_SESSION['driver_name'] ?? 'Unknown';
-    $vehicleInfo    = $_SESSION['vehicle_info'] ?? 'Unknown';
-
-    // Bind parameters and execute
     $stmt->bind_param("sssdss", $userEmail, $pickupLocation, $dropoffLocation, $ridePrice, $driverName, $vehicleInfo);
     $stmt->execute();
-
-    // Close statement and connection
     $stmt->close();
     $conn->close();
 
@@ -48,7 +38,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_SESSION['ride_status']) && 
     // Redirect back to the dashboard
     header("Location: dashboard.php");
     exit();
-
 } else {
     // If accessed directly or no ride is active, redirect to dashboard
     header("Location: dashboard.php");

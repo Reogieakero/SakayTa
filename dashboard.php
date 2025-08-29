@@ -47,8 +47,20 @@ $conn->close();
     <title>Passenger Dashboard - Sakay Ta</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="dashboard-styles.css">
+
 </head>
 <body>
+    <?php
+    if (isset($_SESSION['notification'])): ?>
+        <div class="notification-success" id="notification">
+            <p><?php echo htmlspecialchars($_SESSION['notification']); ?></p>
+            <button class="close-btn" onclick="document.getElementById('notification').style.display='none';">&times;</button>
+        </div>
+    <?php
+    unset($_SESSION['notification']);
+    endif;
+    ?>
+
     <header class="header">
         <div class="container">
             <div class="logo">
