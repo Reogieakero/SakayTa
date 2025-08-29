@@ -4,8 +4,6 @@ ini_set('display_errors', 1);
 
 session_start();
 
-
-
 // Redirect if the user is not logged in
 if (!isset($_SESSION['user_email'])) {
     header("Location: login.html");
