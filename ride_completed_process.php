@@ -44,12 +44,9 @@ unset($_SESSION['dropoff_location']);
 unset($_SESSION['ride_price']);
 unset($_SESSION['driver_name']);
 unset($_SESSION['vehicle_info']);
-unset($_SESSION['eta']);
-$_SESSION['notification'] = 'Payment successful! Your ride is complete.';
 
-$conn->close();
-
-// Redirect back to the dashboard to show the clean state
+// ✅ Redirect to the dashboard with a success notification
+$_SESSION['notification'] = 'Payment successful! Your trip has been added to your ride history.';
 header("Location: dashboard.php");
 exit();
 ?>
