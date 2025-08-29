@@ -29,7 +29,6 @@ if ($conn->connect_error) {
 }
 
 // Generate a random driver and vehicle for demonstration purposes
-// You would replace this with real logic to find a driver
 $drivers = [
     'John Dela Cruz' => 'Toyota Vios (WQR-567)',
     'Maria Santos'    => 'Honda City (XYZ-123)',
@@ -39,13 +38,13 @@ $randomDriver = array_rand($drivers);
 $vehicleInfo = $drivers[$randomDriver];
 
 // Prepare the SQL statement to insert the new ride into the 'rides' table
-// This query saves the user, locations, and the correctly submitted ride price.
-$sql = "INSERT INTO rides (user_email, pickup_location, dropoff_location, ride_price, driver_name, vehicle_info, ride_date) VALUES (?, ?, ?, ?, ?, ?, NOW())";
+$sql = "INSERT INTO rides (user_email, pickup_location, dropoff_location, ride_price, driver_name, vehicle_info, ride_date, ride_status) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)";
 $stmt = $conn->prepare($sql);
 
 if ($stmt) {
-    // ✅ FIX: The 'ssssss' string now correctly matches the six variables being bound.
-    $stmt->bind_param("ssssss", $userEmail, $pickupLocation, $dropoffLocation, $ridePrice, $randomDriver, $vehicleInfo);
+    // ✅ FIX: The 'ssssssd' string now correctly matches the seven variables being bound.
+    $rideStatus = 'accepted';
+    $stmt->bind_param("ssssssd", $userEmail, $pickupLocation, $dropoffLocation, $ridePrice, $randomDriver, $vehicleInfo, $rideStatus);
     $stmt->execute();
     $stmt->close();
 } else {
@@ -56,8 +55,7 @@ if ($stmt) {
 }
 
 // ✅ Store ride details in session for `dashboard.php` to display
-// This updates the 'current ride' section on the dashboard
-$_SESSION['ride_status'] = 'accepted';
+$_SESSION['ride_status'] = $rideStatus;
 $_SESSION['pickup_location'] = $pickupLocation;
 $_SESSION['dropoff_location'] = $dropoffLocation;
 $_SESSION['ride_price'] = $ridePrice;

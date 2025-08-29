@@ -24,9 +24,7 @@ if ($conn->connect_error) {
 
 // ✅ Update the ride status in the database to 'completed'
 $userEmail = $_SESSION['user_email'];
-
-// Update the most recent ride for the user
-$sql = "UPDATE rides SET ride_status = 'completed' WHERE user_email = ? ORDER BY ride_date DESC LIMIT 1";
+$sql = "UPDATE rides SET ride_status = 'completed' WHERE user_email = ? AND ride_status = 'arrived_at_destination' ORDER BY ride_date DESC LIMIT 1";
 $stmt = $conn->prepare($sql);
 
 if ($stmt) {

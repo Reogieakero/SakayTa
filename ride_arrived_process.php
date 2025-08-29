@@ -23,13 +23,8 @@ if ($conn->connect_error) {
 }
 
 // ✅ Update the ride status in the database
-// The 'ride_book_process.php' script should have stored the last ride's ID
-// You will need to add a way to get the ride ID, for this example we'll assume it's in the session.
-// For now, let's just update the most recent ride for the user.
 $userEmail = $_SESSION['user_email'];
-
-// Update the most recent ride for the user
-$sql = "UPDATE rides SET ride_status = 'arrived_at_destination' WHERE user_email = ? ORDER BY ride_date DESC LIMIT 1";
+$sql = "UPDATE rides SET ride_status = 'arrived_at_destination' WHERE user_email = ? AND ride_status = 'accepted' ORDER BY ride_date DESC LIMIT 1";
 $stmt = $conn->prepare($sql);
 
 if ($stmt) {
