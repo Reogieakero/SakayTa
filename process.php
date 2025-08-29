@@ -4,6 +4,7 @@ ini_set('display_errors', 1);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Get form values
+    $name = $_POST['name'] ?? '';
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
     $role = $_POST['role'] ?? '';
@@ -24,10 +25,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
     // ✅ Insert into table
-    $sql = "INSERT INTO users (email, password, role) VALUES (?, ?, ?)";
+    // Now including the 'name' column in the insert statement
+    $sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
+
     if ($stmt) {
-        $stmt->bind_param("sss", $email, $hashedPassword, $role);
+        $stmt->bind_param("ssss", $name, $email, $hashedPassword, $role);
         if ($stmt->execute()) {
             // Redirect to the login page after successful registration
             header("Location: login.html");
@@ -37,11 +40,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
         $stmt->close();
     } else {
-        echo "❌ SQL prepare failed: " . $conn->error;
+        echo "❌ Error preparing statement: " . $conn->error;
     }
-
     $conn->close();
-} else {
-    echo "⚠️ Please submit the form.";
 }
 ?>

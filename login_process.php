@@ -20,8 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         die("❌ Connection failed: " . $conn->connect_error);
     }
 
-    // Corrected SQL statement: Select only 'password' and 'role'
-    $sql = "SELECT password, role FROM users WHERE email = ?";
+    // Corrected SQL statement: Select 'password', 'role', AND 'name'
+    $sql = "SELECT password, role, name FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
@@ -36,14 +36,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (password_verify($password, $hashedPassword)) {
                 // User is authenticated, store user info in session
                 $_SESSION['user_email'] = $email;
-                $_SESSION['user_role'] = $row['role']; // Store the user's role
+                $_SESSION['user_role'] = $row['role'];
+                $_SESSION['user_name'] = $row['name']; // Store the user's name
 
                 // Redirect based on role
                 if ($row['role'] === 'passenger') {
                     header("Location: dashboardPassenger.php");
                 } elseif ($row['role'] === 'driver') {
-                    // header("Location: dashboardDriver.php");
-                    echo "🚗 Welcome, Driver!";
+                    header("Location: dashboardDriver.php");
                 }
                 exit();
             } else {
