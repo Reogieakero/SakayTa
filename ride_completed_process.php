@@ -7,7 +7,7 @@ ini_set('display_errors', 1);
 $servername = "localhost";
 $username   = "root";  // default XAMPP username
 $password   = "";      // default XAMPP password is empty
-$dbname     = "sakayta"; // change if your DB has a different name
+$dbname     = "sakay_ta"; // change if your DB has a different name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
