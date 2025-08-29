@@ -148,6 +148,8 @@ $conn->close();
                             </div>
                         </div>
                         
+                        <input type="hidden" name="ride_price" id="ridePriceInput" value="220">
+                        
                         <button type="submit" class="btn btn-orange btn-full btn-animated">
                             <span>Book Now</span>
                             <div class="btn-loader"></div>
@@ -365,6 +367,25 @@ $conn->close();
             setTimeout(() => {
                 this.submit();
             }, randomDelay);
+        });
+
+        // ✅ New JavaScript to handle price selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const optionCards = document.querySelectorAll('.option-card');
+            const ridePriceInput = document.getElementById('ridePriceInput');
+
+            optionCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove 'active' class from all cards
+                    optionCards.forEach(c => c.classList.remove('active'));
+                    
+                    // Add 'active' class to the clicked card
+                    this.classList.add('active');
+                    
+                    // Update the hidden input field with the selected price
+                    ridePriceInput.value = this.dataset.price;
+                });
+            });
         });
     </script>
 </body>

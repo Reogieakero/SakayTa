@@ -1,38 +1,75 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Check if a ride is not already active
-    if (!isset($_SESSION['ride_status']) || $_SESSION['ride_status'] === 'completed' || $_SESSION['ride_status'] === 'declined') {
-        // Create arrays for random data
-        $drivers = ["Sitoy Santos", "Juan dela Cruz", "Maria Alcantara", "Pedro Amada"];
-        $vehicles = ["Bao-bao", "Pedicab", "Motor"];
-        $ridePrices = ["150", "220"];
-
-        // Select random data
-        $randomDriverKey = array_rand($drivers);
-        $_SESSION['driver_name'] = $drivers[$randomDriverKey];
-
-        $randomVehicleKey = array_rand($vehicles);
-        $bodyNumber = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-        $_SESSION['vehicle_info'] = $vehicles[$randomVehicleKey] . ' ' . $bodyNumber;
-
-        // Generate a random ETA between 2 and 10 minutes
-        $_SESSION['eta'] = rand(2, 10) . ' minutes';
-        
-        // Select a random price for the ride
-        $randomPriceKey = array_rand($ridePrices);
-        $_SESSION['ride_price'] = $ridePrices[$randomPriceKey];
-
-        // Set the initial ride status to 'accepted'
-        $_SESSION['ride_status'] = 'accepted';
-    }
-
-    // Redirect to the dashboard
-    header("Location: dashboard.php");
-    exit();
-} else {
-    header("Location: dashboard.php");
+// Redirect if the user is not logged in or the request is not a POST request
+if (!isset($_SESSION['user_email']) || $_SERVER["REQUEST_METHOD"] !== "POST") {
+    header("Location: login.html");
     exit();
 }
+
+// ✅ Retrieve user details and booking information from the POST data and session
+$userEmail = $_SESSION['user_email'];
+$pickupLocation = $_POST['pickup_location'] ?? 'Not specified';
+$dropoffLocation = $_POST['dropoff_location'] ?? 'Not specified';
+$ridePrice = $_POST['ride_price'] ?? '0';
+
+// ✅ Connect to MySQL database to save the ride information
+$servername = "localhost";
+$username   = "root";
+$dbpassword = "";
+$dbname     = "sakay_ta";
+
+$conn = new mysqli($servername, $username, $dbpassword, $dbname);
+
+if ($conn->connect_error) {
+    die("❌ Connection failed: " . $conn->connect_error);
+}
+
+// Generate a random driver and vehicle for demonstration purposes
+// You would replace this with real logic to find a driver
+$drivers = [
+    'John Dela Cruz' => 'Toyota Vios (WQR-567)',
+    'Maria Santos'    => 'Honda City (XYZ-123)',
+    'Peter Lim'       => 'Nissan Almera (ABC-456)'
+];
+$randomDriver = array_rand($drivers);
+$vehicleInfo = $drivers[$randomDriver];
+
+// Prepare the SQL statement to insert the new ride into the 'rides' table
+// This query saves the user, locations, and the correctly submitted ride price.
+$sql = "INSERT INTO rides (user_email, pickup_location, dropoff_location, ride_price, driver_name, vehicle_info, ride_date) VALUES (?, ?, ?, ?, ?, ?, NOW())";
+$stmt = $conn->prepare($sql);
+
+if ($stmt) {
+    // Bind parameters and execute the statement
+    $stmt->bind_param("sssds", $userEmail, $pickupLocation, $dropoffLocation, $ridePrice, $randomDriver, $vehicleInfo);
+    $stmt->execute();
+    $stmt->close();
+} else {
+    // Handle SQL preparation error
+    echo "❌ Error preparing statement: " . $conn->error;
+    $conn->close();
+    exit();
+}
+
+// ✅ Store ride details in session for `dashboard.php` to display
+// This updates the 'current ride' section on the dashboard
+$_SESSION['ride_status'] = 'accepted';
+$_SESSION['pickup_location'] = $pickupLocation;
+$_SESSION['dropoff_location'] = $dropoffLocation;
+$_SESSION['ride_price'] = $ridePrice;
+$_SESSION['driver_name'] = $randomDriver;
+$_SESSION['vehicle_info'] = $vehicleInfo;
+$_SESSION['eta'] = '5 mins';
+$_SESSION['notification'] = 'Your ride has been booked! Your driver is on the way.';
+
+// Close the database connection
+$conn->close();
+
+// Redirect back to the dashboard to show the current ride status
+header("Location: dashboard.php");
+exit();
 ?>
