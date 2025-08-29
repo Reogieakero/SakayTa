@@ -29,8 +29,8 @@ if ($conn->connect_error) {
     die("❌ Connection failed: " . $conn->connect_error);
 }
 
-// ✅ Query for the 3 most recent completed rides
-$sql = "SELECT pickup_location, dropoff_location, ride_price, ride_date FROM rides WHERE user_email = ? AND ride_status = 'completed' ORDER BY ride_date DESC LIMIT 3";
+// ✅ FIX: Query for the 3 most recent completed rides, including driver and vehicle info
+$sql = "SELECT pickup_location, dropoff_location, ride_price, driver_name, vehicle_info, ride_date FROM rides WHERE user_email = ? AND ride_status = 'completed' ORDER BY ride_date DESC LIMIT 3";
 $stmt = $conn->prepare($sql);
 $rides = [];
 
@@ -314,8 +314,16 @@ $conn->close();
                                         </svg>
                                     </div>
                                     <div class="ride-info">
-                                        <div class="ride-route"><?php echo htmlspecialchars($ride['pickup_location']); ?> → <?php echo htmlspecialchars($ride['dropoff_location']); ?></div>
-                                        <div class="ride-date"><?php echo date("F d, Y • h:i A", strtotime($ride['ride_date'])); ?></div>
+                                        <div class="ride-route">
+                                            <b><?php echo htmlspecialchars($ride['pickup_location']); ?> → <?php echo htmlspecialchars($ride['dropoff_location']); ?></b>
+                                        </div>
+                                        <div class="ride-details">
+                                            <span>Driver: <?php echo htmlspecialchars($ride['driver_name']); ?></span>
+                                            <span>Vehicle: <?php echo htmlspecialchars($ride['vehicle_info']); ?></span>
+                                        </div>
+                                        <div class="ride-date">
+                                            <?php echo date("F d, Y • h:i A", strtotime($ride['ride_date'])); ?>
+                                        </div>
                                     </div>
                                     <div class="ride-price">
                                         <span class="price">₱<?php echo htmlspecialchars($ride['ride_price']); ?></span>
