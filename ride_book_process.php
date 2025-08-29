@@ -61,13 +61,11 @@ $_SESSION['dropoff_location'] = $dropoffLocation;
 $_SESSION['ride_price'] = $ridePrice;
 $_SESSION['driver_name'] = $randomDriver;
 $_SESSION['vehicle_info'] = $vehicleInfo;
-$_SESSION['eta'] = '5 mins';
-$_SESSION['notification'] = 'Your ride has been booked! Your driver is on the way.';
 
-// Close the database connection
-$conn->close();
+// Set the notification message
+$_SESSION['notification'] = 'Booking successful! Your ride is now active.';
 
-// Redirect back to the dashboard to show the current ride status
+// Redirect to the dashboard
 header("Location: dashboard.php");
 exit();
 ?>
