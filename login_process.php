@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 // Redirect based on role
                 if ($row['role'] === 'passenger') {
-                    header("Location: dashboard.php");
+                    header("Location: dashboard.html");
                 } elseif ($row['role'] === 'driver') {
                     header("Location: dashboardDriver.php");
                 }
