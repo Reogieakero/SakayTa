@@ -42,9 +42,9 @@ $sql = "INSERT INTO rides (user_email, pickup_location, dropoff_location, ride_p
 $stmt = $conn->prepare($sql);
 
 if ($stmt) {
-    // ✅ FIX: The 'ssssssd' string now correctly matches the seven variables being bound.
+    // ✅ FIX: The 'ssssssd' string has been corrected to 'sssssss' to match the seven string variables.
     $rideStatus = 'accepted';
-    $stmt->bind_param("ssssssd", $userEmail, $pickupLocation, $dropoffLocation, $ridePrice, $randomDriver, $vehicleInfo, $rideStatus);
+    $stmt->bind_param("sssssss", $userEmail, $pickupLocation, $dropoffLocation, $ridePrice, $randomDriver, $vehicleInfo, $rideStatus);
     $stmt->execute();
     $stmt->close();
 } else {
