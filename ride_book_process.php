@@ -43,7 +43,7 @@ $stmt = $conn->prepare($sql);
 
 if ($stmt) {
     // ✅ FIX: The 'ssssssd' string now correctly matches the seven variables being bound.
-    \$rideStatus = 'pending';
+    $rideStatus = 'accepted';
     $stmt->bind_param("ssssssd", $userEmail, $pickupLocation, $dropoffLocation, $ridePrice, $randomDriver, $vehicleInfo, $rideStatus);
     $stmt->execute();
     $stmt->close();
@@ -55,17 +55,19 @@ if ($stmt) {
 }
 
 // ✅ Store ride details in session for `dashboard.php` to display
-$_SESSION['ride_status'] = 'pending';
+$_SESSION['ride_status'] = $rideStatus;
 $_SESSION['pickup_location'] = $pickupLocation;
 $_SESSION['dropoff_location'] = $dropoffLocation;
 $_SESSION['ride_price'] = $ridePrice;
 $_SESSION['driver_name'] = $randomDriver;
 $_SESSION['vehicle_info'] = $vehicleInfo;
+$_SESSION['eta'] = '5 mins';
+$_SESSION['notification'] = 'Your ride has been booked! Your driver is on the way.';
 
-// Set the notification message
-$_SESSION['notification'] = 'Booking successful! Your ride is now active.';
+// Close the database connection
+$conn->close();
 
-// Redirect to the dashboard
+// Redirect back to the dashboard to show the current ride status
 header("Location: dashboard.php");
 exit();
 ?>
