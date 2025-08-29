@@ -42,7 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($row['role'] === 'passenger') {
                     header("Location: dashboardPassenger.php");
                 } elseif ($row['role'] === 'driver') {
-                    header("Location: dashboardDriver.php");
+                    // header("Location: dashboardDriver.php");
+                    echo "🚗 Welcome, Driver!";
                 }
                 exit();
             } else {
