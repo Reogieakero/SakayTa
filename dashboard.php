@@ -155,6 +155,8 @@ $conn->close();
                             </div>
                         </div>
                         
+                        <input type="hidden" id="ridePriceInput" name="ride_price" value="220">
+                        
                         <button type="submit" class="btn btn-orange btn-full btn-animated">
                             <span>Book Now</span>
                             <div class="btn-loader"></div>
@@ -337,13 +339,35 @@ $conn->close();
     </div>
     <script src="dashboard-script.js"></script>
     <script>
-        document.getElementById('bookingForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            document.getElementById('loadingOverlay').classList.add('active');
-            const randomDelay = Math.random() * 5000 + 5000;
-            setTimeout(() => {
-                this.submit();
-            }, randomDelay);
+        document.addEventListener('DOMContentLoaded', () => {
+            const bookingForm = document.getElementById('bookingForm');
+            const rideOptionCards = document.querySelectorAll('.ride-options .option-card');
+            const ridePriceInput = document.getElementById('ridePriceInput');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            // Handle card selection
+            rideOptionCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    // Remove 'active' class from all cards
+                    rideOptionCards.forEach(c => c.classList.remove('active'));
+                    // Add 'active' class to the clicked card
+                    card.classList.add('active');
+                    // Update the hidden input value with the data-price attribute
+                    ridePriceInput.value = card.dataset.price;
+                });
+            });
+
+            // Handle form submission with loading overlay
+            bookingForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                loadingOverlay.classList.add('active');
+                
+                // Simulate a delay before submitting the form
+                const randomDelay = Math.random() * 5000 + 5000;
+                setTimeout(() => {
+                    this.submit();
+                }, randomDelay);
+            });
         });
     </script>
 </body>
