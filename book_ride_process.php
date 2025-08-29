@@ -4,10 +4,6 @@ session_start();
 // Check if the request method is POST
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    // You can retrieve pickup and dropoff locations from the form if you need them for a database.
-    // $pickupLocation = $_POST['pickup'] ?? '';
-    // $dropoffLocation = $_POST['dropoff'] ?? '';
-
     // Create arrays for random data
     $drivers = ["Sitoy Santos", "Juan dela Cruz", "Maria Alcantara", "Pedro Amada"];
     $vehicles = ["Bao-bao", "Pedicab", "Motor"];
@@ -24,8 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Generate a random ETA between 2 and 10 minutes
     $_SESSION['eta'] = rand(2, 10) . ' minutes';
 
-    // Set a flag to indicate that a ride is now active
-    $_SESSION['current_ride_active'] = true;
+    // Set a flag to indicate that a ride is pending acceptance.
+    $_SESSION['ride_status'] = 'arrived';
 
     // Redirect the user back to the dashboard
     header("Location: dashboard.php");
