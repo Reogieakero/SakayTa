@@ -9,6 +9,8 @@ if (!isset($_SESSION['user_email']) || $_SERVER["REQUEST_METHOD"] !== "POST") {
     exit();
 }
 
+echo "✅ Debug: Starting ride booking process.<br>";
+
 $userEmail = $_SESSION['user_email'];
 $pickupLocation = $_POST['pickup_location'] ?? 'Not specified';
 $dropoffLocation = $_POST['dropoff_location'] ?? 'Not specified';
@@ -40,6 +42,9 @@ if ($stmt) {
     $rideStatus = 'accepted';
     $stmt->bind_param("sssssss", $userEmail, $pickupLocation, $dropoffLocation, $ridePrice, $randomDriver, $vehicleInfo, $rideStatus);
     $stmt->execute();
+    
+    echo "✅ Debug: Ride booked successfully with status 'accepted'.<br>";
+    
     $stmt->close();
 } else {
     echo "❌ Error preparing statement: " . $conn->error;
