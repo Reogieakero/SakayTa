@@ -26,7 +26,7 @@ $dropoff = '';
 $conn = db();
 
 // latest ride (any status) just to show current
-$sql = "SELECT id, pickup_location, dropoff_location, ride_price, driver_name, vehicle_info, ride_date, ride_status
+$sql = "SELECT ride_id, pickup_location, dropoff_location, ride_price, driver_name, vehicle_info, ride_date, ride_status
         FROM rides
         WHERE user_email=?
         ORDER BY ride_date DESC
