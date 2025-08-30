@@ -420,16 +420,14 @@ body {
 }
 
 .title-sakay {
-  color: #ff8c00; /* bright orange */
-  text-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+  color: #ff8c00;
   display: inline-block;
   animation: titleFloat3D 3s ease-in-out infinite;
   transform-style: preserve-3d;
 }
 
 .title-ta {
-  color: #87ceeb; /* sky blue */
-  text-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+  color: #87ceeb;
   display: inline-block;
   animation: titleFloat3D 3s ease-in-out infinite 0.5s;
   transform-style: preserve-3d;
