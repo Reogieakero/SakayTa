@@ -7,38 +7,99 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-     Moving Cars Background Animation 
+    <!-- Added 3D generative background system -->
+    <div class="generative-background">
+        <canvas id="particleCanvas"></canvas>
+        <canvas id="threeDCanvas"></canvas>
+        <div class="neural-network"></div>
+        <div class="data-streams"></div>
+        <div class="geometric-shapes"></div>
+        <div class="floating-elements"></div>
+    </div>
+
+    <!-- Moving Cars Background Animation -->
     <div class="moving-cars-container">
+        <!-- Enhanced cars with full 3D structure and realistic details -->
         <div class="car car-1">
-            <svg width="60" height="30" viewBox="0 0 60 30" fill="none">
-                <rect x="10" y="15" width="40" height="8" rx="4" fill="#4A90E2"/>
-                <rect x="15" y="10" width="25" height="8" rx="3" fill="#87CEEB"/>
-                <circle cx="20" cy="25" r="3" fill="#333"/>
-                <circle cx="40" cy="25" r="3" fill="#333"/>
-                <rect x="45" y="17" width="8" height="4" rx="2" fill="#FFD700"/>
-            </svg>
+            <div class="car-3d-wrapper">
+                <div class="car-body">
+                    <div class="car-roof"></div>
+                    <div class="car-windshield front"></div>
+                    <div class="car-windshield rear"></div>
+                    <div class="car-side left"></div>
+                    <div class="car-side right"></div>
+                    <div class="car-bottom"></div>
+                </div>
+                <div class="car-wheels">
+                    <div class="wheel front-left"></div>
+                    <div class="wheel front-right"></div>
+                    <div class="wheel rear-left"></div>
+                    <div class="wheel rear-right"></div>
+                </div>
+                <div class="car-lights">
+                    <div class="headlight left"></div>
+                    <div class="headlight right"></div>
+                    <div class="taillight left"></div>
+                    <div class="taillight right"></div>
+                </div>
+                <div class="car-shadow"></div>
+            </div>
         </div>
+        
         <div class="car car-2">
-            <svg width="60" height="30" viewBox="0 0 60 30" fill="none">
-                <rect x="10" y="15" width="40" height="8" rx="4" fill="#FF8C00"/>
-                <rect x="15" y="10" width="25" height="8" rx="3" fill="#FFB84D"/>
-                <circle cx="20" cy="25" r="3" fill="#333"/>
-                <circle cx="40" cy="25" r="3" fill="#333"/>
-                <rect x="45" y="17" width="8" height="4" rx="2" fill="#FFD700"/>
-            </svg>
+            <div class="car-3d-wrapper">
+                <div class="car-body">
+                    <div class="car-roof"></div>
+                    <div class="car-windshield front"></div>
+                    <div class="car-windshield rear"></div>
+                    <div class="car-side left"></div>
+                    <div class="car-side right"></div>
+                    <div class="car-bottom"></div>
+                </div>
+                <div class="car-wheels">
+                    <div class="wheel front-left"></div>
+                    <div class="wheel front-right"></div>
+                    <div class="wheel rear-left"></div>
+                    <div class="wheel rear-right"></div>
+                </div>
+                <div class="car-lights">
+                    <div class="headlight left"></div>
+                    <div class="headlight right"></div>
+                    <div class="taillight left"></div>
+                    <div class="taillight right"></div>
+                </div>
+                <div class="car-shadow"></div>
+            </div>
         </div>
+        
         <div class="car car-3">
-            <svg width="60" height="30" viewBox="0 0 60 30" fill="none">
-                <rect x="10" y="15" width="40" height="8" rx="4" fill="#4CAF50"/>
-                <rect x="15" y="10" width="25" height="8" rx="3" fill="#81C784"/>
-                <circle cx="20" cy="25" r="3" fill="#333"/>
-                <circle cx="40" cy="25" r="3" fill="#333"/>
-                <rect x="45" y="17" width="8" height="4" rx="2" fill="#FFD700"/>
-            </svg>
+            <div class="car-3d-wrapper">
+                <div class="car-body">
+                    <div class="car-roof"></div>
+                    <div class="car-windshield front"></div>
+                    <div class="car-windshield rear"></div>
+                    <div class="car-side left"></div>
+                    <div class="car-side right"></div>
+                    <div class="car-bottom"></div>
+                </div>
+                <div class="car-wheels">
+                    <div class="wheel front-left"></div>
+                    <div class="wheel front-right"></div>
+                    <div class="wheel rear-left"></div>
+                    <div class="wheel rear-right"></div>
+                </div>
+                <div class="car-lights">
+                    <div class="headlight left"></div>
+                    <div class="headlight right"></div>
+                    <div class="taillight left"></div>
+                    <div class="taillight right"></div>
+                </div>
+                <div class="car-shadow"></div>
+            </div>
         </div>
     </div>
 
-     Header 
+    <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="logo">
@@ -48,23 +109,43 @@
                     <circle cx="16" cy="26" r="2" fill="#333"/>
                     <circle cx="24" cy="26" r="2" fill="#333"/>
                 </svg>
-                <span class="logo-text" >Sakay Ta</span>
+                <span class="logo-text">Sakay Ta</span>
+            </div>
+            <div class="system-status">
+                <div class="status-indicator">
+                    <div class="status-dot active"></div>
+                    <span>System Online</span>
+                </div>
+                <div class="live-metrics">
+                    <span class="metric">
+                        <span class="metric-value" id="activeRides">247</span>
+                        <span class="metric-label">Active Rides</span>
+                    </span>
+                    <span class="metric">
+                        <span class="metric-value" id="avgWaitTime">3.2</span>
+                        <span class="metric-label">Avg Wait (min)</span>
+                    </span>
+                </div>
             </div>
             <nav class="nav">
+                <a href="#analytics" class="nav-link">Analytics</a>
+                <a href="#fleet" class="nav-link">Fleet</a>
                 <a href="login.html" class="btn btn-outline">Login</a>
                 <a href="signup.html" class="btn btn-primary">Sign Up</a>
             </nav>
         </div>
     </header>
 
-     Hero Section 
+    <!-- Hero Section -->
     <section class="hero">
         <div class="hero-background"></div>
-          Added floating road elements for transportation theme 
+        <!-- Enhanced 3D road elements -->
         <div class="road-elements">
             <div class="road-line road-line-1"></div>
             <div class="road-line road-line-2"></div>
             <div class="road-line road-line-3"></div>
+            <div class="generative-roads"></div>
+            <div class="three-d-roads"></div>
         </div>
         <div class="container">
             <div class="hero-content">
@@ -116,30 +197,213 @@
         </div>
     </section>
 
-     Stats Section 
-    <section class="stats">
+    <!-- Real-time Transportation Dashboard -->
+    <section class="transport-dashboard">
         <div class="container">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number blue">3.5k +</div>
-                    <div class="stat-label">Active Users</div>
+            <div class="dashboard-grid">
+                <div class="dashboard-card route-optimization">
+                    <h3>Route Optimization</h3>
+                    <div class="route-visual">
+                        <div class="route-map">
+                            <div class="route-line active"></div>
+                            <div class="route-line secondary"></div>
+                            <div class="route-nodes">
+                                <div class="node start"></div>
+                                <div class="node waypoint"></div>
+                                <div class="node destination"></div>
+                            </div>
+                            <div class="traffic-indicators">
+                                <div class="traffic-light green"></div>
+                                <div class="traffic-light yellow"></div>
+                                <div class="traffic-light red"></div>
+                            </div>
+                        </div>
+                        <div class="route-stats">
+                            <div class="stat">
+                                <span class="value">12.4km</span>
+                                <span class="label">Optimal Route</span>
+                            </div>
+                            <div class="stat">
+                                <span class="value">18min</span>
+                                <span class="label">ETA</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number green">200 +</div>
-                    <div class="stat-label">Verified Drivers</div>
+
+                <div class="dashboard-card fleet-tracking">
+                    <h3>Fleet Management</h3>
+                    <div class="fleet-grid">
+                        <div class="vehicle-status">
+                            <div class="vehicle active">
+                                <div class="vehicle-icon"></div>
+                                <div class="vehicle-info">
+                                    <span class="id">VH-001</span>
+                                    <span class="status">En Route</span>
+                                </div>
+                                <div class="signal-strength">
+                                    <div class="bar"></div>
+                                    <div class="bar"></div>
+                                    <div class="bar"></div>
+                                    <div class="bar"></div>
+                                </div>
+                            </div>
+                            <div class="vehicle idle">
+                                <div class="vehicle-icon"></div>
+                                <div class="vehicle-info">
+                                    <span class="id">VH-002</span>
+                                    <span class="status">Available</span>
+                                </div>
+                                <div class="signal-strength">
+                                    <div class="bar"></div>
+                                    <div class="bar"></div>
+                                    <div class="bar"></div>
+                                </div>
+                            </div>
+                            <div class="vehicle maintenance">
+                                <div class="vehicle-icon"></div>
+                                <div class="vehicle-info">
+                                    <span class="id">VH-003</span>
+                                    <span class="status">Maintenance</span>
+                                </div>
+                                <div class="signal-strength">
+                                    <div class="bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number orange">10k +</div>
-                    <div class="stat-label">Complete Rides</div>
+
+                <div class="dashboard-card analytics-panel">
+                    <h3>Real-time Analytics</h3>
+                    <div class="analytics-charts">
+                        <div class="chart demand-chart">
+                            <div class="chart-header">
+                                <span class="chart-title">Demand Heatmap</span>
+                                <span class="chart-value">+23%</span>
+                            </div>
+                            <div class="heatmap">
+                                <div class="heat-zone high"></div>
+                                <div class="heat-zone medium"></div>
+                                <div class="heat-zone low"></div>
+                                <div class="heat-zone high"></div>
+                                <div class="heat-zone medium"></div>
+                            </div>
+                        </div>
+                        <div class="chart efficiency-chart">
+                            <div class="chart-header">
+                                <span class="chart-title">System Efficiency</span>
+                                <span class="chart-value">94.2%</span>
+                            </div>
+                            <div class="efficiency-ring">
+                                <div class="ring-progress"></div>
+                                <div class="ring-center">94%</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number navy">4.8</div>
-                    <div class="stat-label">Average Rating</div>
-                </div>
+            </div>
         </div>
     </section>
 
-     CTA Section 
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-header">
+                <h2>Transportation Network Performance</h2>
+                <p>Real-time insights into our transportation ecosystem</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="stat-number blue" data-target="3500">0</div>
+                    <div class="stat-label">Active Users</div>
+                    <div class="stat-trend positive">+12% this month</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M18 16l2-6H4l2 6m0 0h12m-12 0v2a2 2 0 002 2h1a2 2 0 002-2v-2m6 0v2a2 2 0 002 2h1a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="stat-number green" data-target="247">0</div>
+                    <div class="stat-label">Verified Drivers</div>
+                    <div class="stat-trend positive">+8% this week</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M9 11H7l3-7 3 7h-2l1 7-3-7z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="stat-number orange" data-target="10247">0</div>
+                    <div class="stat-label">Complete Rides</div>
+                    <div class="stat-trend positive">+156 today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="stat-number navy" data-target="4.8">0</div>
+                    <div class="stat-label">Average Rating</div>
+                    <div class="stat-trend stable">Consistent quality</div>
+                </div>
+            </div>
+            
+            <!-- Added professional KPI dashboard -->
+            <div class="kpi-dashboard">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h4>Response Time</h4>
+                        <span class="kpi-status excellent">Excellent</span>
+                    </div>
+                    <div class="kpi-value">2.3<span class="unit">min</span></div>
+                    <div class="kpi-chart">
+                        <div class="chart-bar" style="height: 60%"></div>
+                        <div class="chart-bar" style="height: 80%"></div>
+                        <div class="chart-bar" style="height: 45%"></div>
+                        <div class="chart-bar" style="height: 90%"></div>
+                        <div class="chart-bar" style="height: 70%"></div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h4>Fleet Utilization</h4>
+                        <span class="kpi-status good">Good</span>
+                    </div>
+                    <div class="kpi-value">87<span class="unit">%</span></div>
+                    <div class="kpi-progress">
+                        <div class="progress-bar" style="width: 87%"></div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h4>Revenue Growth</h4>
+                        <span class="kpi-status excellent">Excellent</span>
+                    </div>
+                    <div class="kpi-value">+23<span class="unit">%</span></div>
+                    <div class="kpi-trend">
+                        <svg width="60" height="30" viewBox="0 0 60 30">
+                            <polyline points="0,25 15,20 30,15 45,10 60,5" stroke="#10B981" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
     <section class="cta">
         <div class="cta-background"></div>
         <div class="container">
